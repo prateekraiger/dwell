@@ -10,10 +10,11 @@ export default function AboutPage() {
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center mb-20">
         <div className="relative aspect-square bg-muted rounded-lg overflow-hidden">
-             {/* Placeholder for About Image */}
-             <div className="absolute inset-0 bg-gradient-to-tr from-slate-200 to-slate-100 flex items-center justify-center text-slate-400">
-                Our Story Image
-             </div>
+             <img
+               src="https://i.pinimg.com/1200x/eb/79/20/eb7920103e314eedd2f7874984722b6a.jpg"
+               alt="Dwell Hotel - Our Story"
+               className="w-full h-full object-cover"
+             />
         </div>
         <div>
           <h2 className="text-3xl font-bold mb-4">Our Mission</h2>

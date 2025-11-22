@@ -32,8 +32,17 @@ export default function ContactPage() {
             </p>
           </div>
           <div className="pt-8">
-             <div className="aspect-video w-full bg-muted rounded-lg flex items-center justify-center text-muted-foreground">
-                Map Placeholder
+             <div className="aspect-video w-full rounded-lg overflow-hidden">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3666.5234567890123!2d77.3653764!3d23.2158833!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x397c43ba3420ec95%3A0xbb396df3ae99705!2sTaj%20Lakefront%2C%20Bhopal!5e0!3m2!1sen!2sin!4v1234567890123!5m2!1sen!2sin"
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="Taj Lakefront, Bhopal Location"
+                ></iframe>
              </div>
           </div>
         </div>
