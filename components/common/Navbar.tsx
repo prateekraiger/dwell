@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, LayoutDashboard } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { UserButton, SignedIn, SignedOut, useUser } from "@clerk/nextjs";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { LayoutDashboard } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { usePathname } from "next/navigation";
 
 const navLinks = [
   { name: "Home", href: "/" },
@@ -20,108 +21,139 @@ export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const { user } = useUser();
   const userData = useQuery(api.users.getUser, user ? { externalId: user.id } : "skip");
+  const pathname = usePathname();
+
+  const isActive = (href: string) => {
+    if (href === "/") return pathname === href;
+    return pathname?.startsWith(href);
+  };
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center justify-between px-4 md:px-8 relative">
-        {/* Left: Logo */}
-        <div className="hidden md:flex items-center">
-          <Link href="/" className="flex items-center space-x-2">
-            <span className="font-bold text-xl tracking-tight">
-              DWELL
-            </span>
-          </Link>
-        </div>
+      <div className="container mx-auto">
+        <div className="flex h-16 items-center justify-between px-4 md:px-6 lg:px-8">
+          {/* Logo */}
+          <div className="flex items-center">
+            <Link href="/" className="flex items-center space-x-2">
+              <span className="font-bold text-xl md:text-2xl tracking-tight bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                DWELL
+              </span>
+            </Link>
+          </div>
 
-        {/* Center: Nav Links */}
-        <nav className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 items-center space-x-6 text-sm font-medium">
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center space-x-1 lg:space-x-2">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="transition-colors hover:text-foreground/80 text-foreground/60"
+                className={cn(
+                  "px-3 lg:px-4 py-2 text-sm font-medium rounded-md transition-all duration-200",
+                  isActive(link.href)
+                    ? "bg-accent text-accent-foreground"
+                    : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+                )}
               >
                 {link.name}
               </Link>
             ))}
-        </nav>
+          </nav>
 
-        {/* Mobile Logo */}
-        <div className="flex md:hidden">
-            <Link href="/" className="flex items-center space-x-2">
-                <span className="font-bold text-xl tracking-tight">DWELL</span>
-            </Link>
-        </div>
-
-        {/* Right: Auth Buttons */}
-        <div className="flex items-center justify-end space-x-4 flex-1 md:flex-none">
+          {/* Right Side - Auth & Actions */}
+          <div className="flex items-center gap-2 md:gap-3">
             <SignedOut>
-              <Link href="/sign-in">
-                <button className="hidden md:inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-transparent text-foreground hover:bg-accent h-10 px-4 py-2">
+              <Link href="/sign-in" className="hidden sm:block">
+                <Button variant="ghost" size="sm">
                   Sign In
-                </button>
+                </Button>
               </Link>
-              <Link href="/sign-up">
-                <button className="hidden md:inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
+              <Link href="/sign-up" className="hidden sm:block">
+                <Button size="sm">
                   Sign Up
-                </button>
+                </Button>
               </Link>
             </SignedOut>
+
             <SignedIn>
               {userData?.role === "owner" && (
-                <Link
-                  href="/dashboard"
-                  className="hidden md:inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 bg-gray-100 text-gray-900 hover:bg-gray-200 h-10 px-4 py-2 mr-2"
-                >
-                  <LayoutDashboard className="mr-2 h-4 w-4" />
-                  Dashboard
+                <Link href="/dashboard" className="hidden sm:block">
+                  <Button variant="outline" size="sm" className="gap-2">
+                    <LayoutDashboard className="h-4 w-4" />
+                    <span className="hidden lg:inline">Dashboard</span>
+                  </Button>
                 </Link>
               )}
-              <UserButton afterSignOutUrl="/" />
+              <UserButton
+                afterSignOutUrl="/"
+                appearance={{
+                  elements: {
+                    avatarBox: "h-8 w-8"
+                  }
+                }}
+              />
             </SignedIn>
 
             {/* Mobile Menu Toggle */}
             <button
-                className="inline-flex items-center justify-center rounded-md p-2 text-muted-foreground hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary md:hidden"
-                onClick={() => setIsOpen(!isOpen)}
+              className="inline-flex items-center justify-center rounded-md p-2 text-muted-foreground hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary md:hidden"
+              onClick={() => setIsOpen(!isOpen)}
+              aria-label="Toggle menu"
             >
-                <span className="sr-only">Open main menu</span>
-                {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
-        </div>
-      </div>
-
-      {/* Mobile Menu */}
-      {isOpen && (
-        <div className="md:hidden">
-          <div className="space-y-1 px-2 pb-3 pt-2">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="block rounded-md px-3 py-2 text-base font-medium text-foreground/70 hover:bg-accent hover:text-accent-foreground"
-                onClick={() => setIsOpen(false)}
-              >
-                {link.name}
-              </Link>
-            ))}
-             <div className="px-3 py-2 space-y-2">
-                <SignedOut>
-                    <Link href="/sign-in">
-                        <button className="w-full items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-transparent text-foreground hover:bg-accent h-10 px-4 py-2 border">
-                            Sign In
-                        </button>
-                    </Link>
-                    <Link href="/sign-up">
-                        <button className="w-full items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
-                            Sign Up
-                        </button>
-                    </Link>
-                </SignedOut>
-             </div>
           </div>
         </div>
-      )}
+
+        {/* Mobile Menu */}
+        {isOpen && (
+          <div className="md:hidden border-t">
+            <div className="space-y-1 px-4 pb-4 pt-2">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={cn(
+                    "block rounded-md px-3 py-2.5 text-base font-medium transition-colors",
+                    isActive(link.href)
+                      ? "bg-accent text-accent-foreground"
+                      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                  )}
+                  onClick={() => setIsOpen(false)}
+                >
+                  {link.name}
+                </Link>
+              ))}
+
+              {/* Mobile Auth Buttons */}
+              <div className="pt-4 space-y-2">
+                <SignedOut>
+                  <Link href="/sign-in" onClick={() => setIsOpen(false)}>
+                    <Button variant="outline" className="w-full">
+                      Sign In
+                    </Button>
+                  </Link>
+                  <Link href="/sign-up" onClick={() => setIsOpen(false)}>
+                    <Button className="w-full">
+                      Sign Up
+                    </Button>
+                  </Link>
+                </SignedOut>
+
+                <SignedIn>
+                  {userData?.role === "owner" && (
+                    <Link href="/dashboard" onClick={() => setIsOpen(false)}>
+                      <Button variant="outline" className="w-full gap-2">
+                        <LayoutDashboard className="h-4 w-4" />
+                        Dashboard
+                      </Button>
+                    </Link>
+                  )}
+                </SignedIn>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </nav>
   );
 }

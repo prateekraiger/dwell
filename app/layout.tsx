@@ -1,5 +1,6 @@
-import type { Metadata } from "next";
+"use client";
 
+import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/common/Navbar";
@@ -14,11 +15,6 @@ const poppins = Poppins({
   style: ["normal", "italic"],
   variable: "--font-poppins",
 });
-
-export const metadata: Metadata = {
-  title: "Dwell",
-  description: "Hotel booking made simple.",
-};
 
 export default function RootLayout({
   children,
