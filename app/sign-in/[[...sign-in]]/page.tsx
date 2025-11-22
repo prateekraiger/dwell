@@ -55,10 +55,10 @@ export default function Page() {
       <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-4">
         <div className="mb-8 text-center">
           <h1 className="mb-2 text-4xl font-bold tracking-tight text-gray-900">
-            Welcome Back
+           Good to see you again
           </h1>
           <p className="text-lg text-gray-600">
-            Sign in to continue to Dwell
+            Continue to your Dwell
           </p>
         </div>
         <SignIn />

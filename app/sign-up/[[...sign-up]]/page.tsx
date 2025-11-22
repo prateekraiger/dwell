@@ -57,9 +57,6 @@ export default function Page() {
           <h1 className="mb-2 text-4xl font-bold tracking-tight text-gray-900">
             Join Dwell
           </h1>
-          <p className="text-lg text-gray-600">
-            Create an account to get started
-          </p>
         </div>
         <SignUp />
       </div>
