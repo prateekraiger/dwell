@@ -22,20 +22,7 @@ export function Footer() {
             <p className="text-muted-foreground">
               Experience luxury redefined. At Dwell, we blend modern elegance with timeless comfort to create unforgettable stays.
             </p>
-            <div className="flex flex-col gap-2 text-sm text-muted-foreground">
-              <div className="flex items-center gap-2">
-                <MapPin className="h-4 w-4" />
-                <span>Taj Lakefront, Bhopal</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Phone className="h-4 w-4" />
-                <span>+91 (755) 123-4567</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Mail className="h-4 w-4" />
-                <span>concierge@dwell-hotel.com</span>
-              </div>
-            </div>
+
           </div>
           <div className="flex flex-col gap-2">
             <h5 className="font-semibold">Explore</h5>
@@ -78,7 +65,7 @@ export function Footer() {
           </div>
           <p className="text-sm text-muted-foreground">
             © {new Date().getFullYear()}{" "}
-            <Link href="/" className="hover:text-foreground transition-colors">Dwell Hotel</Link>.
+            <Link href="/" className="hover:text-foreground transition-colors">Dwell</Link>.
             All rights reserved.
           </p>
         </Container>

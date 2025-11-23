@@ -29,11 +29,7 @@ const items = [
     url: "/dashboard/bookings",
     icon: Calendar,
   },
-  {
-    title: "Guests",
-    url: "/dashboard/guests",
-    icon: Users,
-  },
+
   {
     title: "Settings",
     url: "/dashboard/settings",

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery } from "convex/react";
+import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { Button } from "@/components/ui/button";
@@ -15,26 +15,42 @@ import {
   Shield,
   Clock,
   Home,
+  CheckCircle2,
+  XCircle,
 } from "lucide-react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {  getHighlightByKey } from "@/lib/highlights";
-
-
+import { getHighlightByKey } from "@/lib/highlights";
+import { format, differenceInDays, addDays } from "date-fns";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export default function RoomDetailsPage() {
   const params = useParams();
+  const router = useRouter();
   const roomId = params.roomId as Id<"rooms">;
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
+  // Booking state
+  const [checkInDate, setCheckInDate] = useState<string>("");
+  const [checkOutDate, setCheckOutDate] = useState<string>("");
+  const [isBooking, setIsBooking] = useState(false);
+  const [bookingError, setBookingError] = useState<string | null>(null);
+  const [isSuccess, setIsSuccess] = useState(false);
+
   const room = useQuery(api.rooms.getRoom, { id: roomId });
 
-  // Fetch owner details from Convex
+  // Fetch owner details
   const owner = useQuery(
     api.users.getUserById,
     room ? { userId: room.ownerId } : "skip"
   );
+
+  // Fetch existing bookings for availability
+  const existingBookings = useQuery(api.bookings.getBookingsByRoom, { roomId });
+
+  const createBooking = useMutation(api.bookings.create);
 
   if (room === undefined || owner === undefined) {
     return (
@@ -60,6 +76,37 @@ export default function RoomDetailsPage() {
   const prevImage = () => {
     if (room.photos && hasMultipleImages) {
       setCurrentImageIndex((prev) => (prev - 1 + room.photos.length) % room.photos.length);
+    }
+  };
+
+  // Calculate booking details
+  const checkIn = checkInDate ? new Date(checkInDate) : undefined;
+  const checkOut = checkOutDate ? new Date(checkOutDate) : undefined;
+  const numberOfNights = checkIn && checkOut ? differenceInDays(checkOut, checkIn) : 0;
+  const totalPrice = numberOfNights * room.pricePerNight;
+  const serviceFee = Math.round(totalPrice * 0.12); // 12% service fee
+  const grandTotal = totalPrice + serviceFee;
+
+  const handleBookRoom = async () => {
+    if (!checkIn || !checkOut) return;
+
+    setIsBooking(true);
+    setBookingError(null);
+
+    try {
+      await createBooking({
+        roomId,
+        checkIn: checkIn.getTime(),
+        checkOut: checkOut.getTime(),
+      });
+      setIsSuccess(true);
+      setTimeout(() => {
+        router.push("/my-bookings");
+      }, 2000);
+    } catch (error) {
+      setBookingError(error instanceof Error ? error.message : "Failed to book room");
+    } finally {
+      setIsBooking(false);
     }
   };
 
@@ -212,7 +259,7 @@ export default function RoomDetailsPage() {
           </div>
 
           {/* Booking Card */}
-          <div className="rounded-xl border bg-card p-6 space-y-6 sticky top-[200px]">
+          <div className="rounded-xl border bg-card p-6 space-y-6 sticky top-[200px] shadow-lg">
             <div>
               <h1 className="text-3xl font-bold">{room.title}</h1>
               <div className="flex items-center gap-2 text-muted-foreground mt-2">
@@ -229,16 +276,81 @@ export default function RoomDetailsPage() {
               <span className="text-muted-foreground">per night</span>
             </div>
 
+            {/* Date Selection */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="check-in">Check-in</Label>
+                <Input
+                  id="check-in"
+                  type="date"
+                  min={format(new Date(), "yyyy-MM-dd")}
+                  value={checkInDate}
+                  onChange={(e) => setCheckInDate(e.target.value)}
+                  className="w-full"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="check-out">Check-out</Label>
+                <Input
+                  id="check-out"
+                  type="date"
+                  min={checkInDate || format(addDays(new Date(), 1), "yyyy-MM-dd")}
+                  value={checkOutDate}
+                  onChange={(e) => setCheckOutDate(e.target.value)}
+                  className="w-full"
+                />
+              </div>
+            </div>
+
             <div className="flex items-center gap-3 text-sm">
-              <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-secondary/50">
+              <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-secondary/50 w-full">
                 <Users className="h-4 w-4 text-muted-foreground" />
                 <span>Up to {room.maxGuests} guests</span>
               </div>
             </div>
 
-            <Button size="lg" className="w-full text-base">
-              Book This Room
-            </Button>
+            {/* Price Breakdown */}
+            {numberOfNights > 0 && (
+              <div className="space-y-3 pt-4 border-t">
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">
+                    ₹{room.pricePerNight} x {numberOfNights} nights
+                  </span>
+                  <span>₹{totalPrice.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Service fee</span>
+                  <span>₹{serviceFee.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between font-bold text-lg pt-2 border-t">
+                  <span>Total</span>
+                  <span>₹{grandTotal.toLocaleString()}</span>
+                </div>
+              </div>
+            )}
+
+            {isSuccess ? (
+              <div className="rounded-lg bg-green-500/15 p-4 flex items-center gap-3 text-green-600">
+                <CheckCircle2 className="h-5 w-5" />
+                <div className="text-sm font-medium">Booking confirmed! Redirecting...</div>
+              </div>
+            ) : (
+              <Button
+                size="lg"
+                className="w-full text-base"
+                onClick={handleBookRoom}
+                disabled={!checkIn || !checkOut || isBooking || numberOfNights <= 0}
+              >
+                {isBooking ? "Booking..." : "Book This Room"}
+              </Button>
+            )}
+
+            {bookingError && (
+              <div className="rounded-lg bg-destructive/15 p-3 flex items-center gap-2 text-destructive text-sm">
+                <XCircle className="h-4 w-4" />
+                <span>{bookingError}</span>
+              </div>
+            )}
 
             <p className="text-xs text-center text-muted-foreground">
               You won&apos;t be charged yet

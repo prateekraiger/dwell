@@ -83,6 +83,11 @@ export function Navbar() {
                   </Button>
                 </Link>
               )}
+              <Link href="/my-bookings" className="hidden sm:block">
+                <Button variant="ghost" size="sm" className="gap-2">
+                  <span className="hidden lg:inline">My Bookings</span>
+                </Button>
+              </Link>
               <UserButton
                 afterSignOutUrl="/"
                 appearance={{
@@ -148,6 +153,11 @@ export function Navbar() {
                       </Button>
                     </Link>
                   )}
+                  <Link href="/my-bookings" onClick={() => setIsOpen(false)}>
+                    <Button variant="ghost" className="w-full justify-start">
+                      My Bookings
+                    </Button>
+                  </Link>
                 </SignedIn>
               </div>
             </div>

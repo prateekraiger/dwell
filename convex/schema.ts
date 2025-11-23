@@ -27,6 +27,6 @@ export default defineSchema({
     roomId: v.id("rooms"),
     checkIn: v.number(),
     checkOut: v.number(),
-    status: v.union(v.literal("confirmed"), v.literal("cancelled")),
+    status: v.union(v.literal("confirmed"), v.literal("cancelled"), v.literal("pending")),
   }),
 });
