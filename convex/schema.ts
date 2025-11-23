@@ -8,4 +8,24 @@ export default defineSchema({
     email: v.string(),
     role: v.union(v.literal("guest"), v.literal("owner"), v.literal("admin"), v.literal("pending")),
   }).index("byExternalId", ["externalId"]),
+
+  rooms: defineTable({
+    ownerId: v.id("users"),
+    title: v.string(),
+    location: v.string(),
+    pricePerNight: v.number(),
+    description: v.string(),
+    photos: v.array(v.string()),
+    maxGuests: v.number(),
+    isAvailable: v.boolean(),
+    features: v.optional(v.array(v.string())),
+  }),
+
+  bookings: defineTable({
+    userId: v.id("users"),
+    roomId: v.id("rooms"),
+    checkIn: v.number(), // Storing as timestamp
+    checkOut: v.number(), // Storing as timestamp
+    status: v.union(v.literal("confirmed"), v.literal("cancelled")),
+  }),
 });

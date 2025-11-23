@@ -5,11 +5,10 @@ import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useEffect, useState } from "react";
 import { RoleSelectionModal } from "./RoleSelectionModal";
-import { Id } from "@/convex/_generated/dataModel";
 import { useRouter } from "next/navigation";
 
 export function RoleCheck() {
-  const { user, isLoaded } = useUser();
+  const { user } = useUser();
   const [showModal, setShowModal] = useState(false);
   const router = useRouter();
 

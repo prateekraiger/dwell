@@ -1,7 +1,7 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 
-export const upsertUser = mutation({
+export const updateOrCreateUser = mutation({
   args: {
     externalId: v.string(),
     name: v.string(),
@@ -41,7 +41,7 @@ export const getUser = query({
 });
 
 export const updateUserRole = mutation({
-  args: { userId: v.id("users"), role: v.union(v.literal("guest"), v.literal("owner")) },
+  args: { userId: v.id("users"), role: v.union(v.literal("guest"), v.literal("owner"), v.literal("admin")) },
   handler: async (ctx, args) => {
     await ctx.db.patch(args.userId, { role: args.role });
   },

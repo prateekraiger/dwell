@@ -7,7 +7,7 @@ import { useEffect } from "react";
 
 export function UserSync() {
   const { user } = useUser();
-  const updateUser = useMutation(api.users.upsertUser);
+  const updateUser = useMutation(api.users.updateOrCreateUser);
 
   useEffect(() => {
     if (user) {
