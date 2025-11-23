@@ -30,7 +30,13 @@ export default function RoomDetailsPage() {
 
   const room = useQuery(api.rooms.getRoom, { id: roomId });
 
-  if (room === undefined) {
+  // Fetch owner details from Convex
+  const owner = useQuery(
+    api.users.getUserById,
+    room ? { userId: room.ownerId } : "skip"
+  );
+
+  if (room === undefined || owner === undefined) {
     return (
       <div className="container mx-auto py-20 px-4">
         <div className="h-[500px] w-full rounded-xl bg-muted animate-pulse" />
@@ -55,15 +61,6 @@ export default function RoomDetailsPage() {
     if (room.photos && hasMultipleImages) {
       setCurrentImageIndex((prev) => (prev - 1 + room.photos.length) % room.photos.length);
     }
-  };
-
-  // Mock data for owner (you can later fetch this from Convex)
-  const mockOwner = {
-    name: "John Doe",
-    avatar: "",
-    joinedDate: "2024",
-    responseRate: "95%",
-    responseTime: "within an hour"
   };
 
   return (
@@ -201,16 +198,15 @@ export default function RoomDetailsPage() {
         <div className="lg:col-span-2 space-y-6">
           {/* Owner Info */}
           <div className="rounded-xl border bg-card p-6 space-y-4 sticky top-6">
-            <h3 className="font-semibold text-lg">Hosted by {mockOwner.name}</h3>
+            <h3 className="font-semibold text-lg">Hosted by {owner?.name || "Unknown"}</h3>
             <div className="flex items-center gap-4">
               <Avatar className="h-16 w-16">
-                <AvatarImage src={mockOwner.avatar} />
-                <AvatarFallback className="text-lg">{mockOwner.name.charAt(0)}</AvatarFallback>
+                <AvatarImage src={owner?.imageUrl} alt={owner?.name} />
+                <AvatarFallback className="text-lg">{owner?.name?.charAt(0) || "?"}</AvatarFallback>
               </Avatar>
               <div className="text-sm text-muted-foreground">
-                <p>Joined in {mockOwner.joinedDate}</p>
-                <p>{mockOwner.responseRate} response rate</p>
-                <p>Responds {mockOwner.responseTime}</p>
+                <p>{owner?.email}</p>
+                <p className="text-xs mt-1">Owner on Dwell</p>
               </div>
             </div>
           </div>

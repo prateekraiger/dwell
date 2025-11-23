@@ -6,6 +6,7 @@ export const updateOrCreateUser = mutation({
     externalId: v.string(),
     name: v.string(),
     email: v.string(),
+    imageUrl: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const existingUser = await ctx.db
@@ -17,6 +18,7 @@ export const updateOrCreateUser = mutation({
       await ctx.db.patch(existingUser._id, {
         name: args.name,
         email: args.email,
+        imageUrl: args.imageUrl,
       });
       return existingUser._id;
     }
@@ -25,6 +27,7 @@ export const updateOrCreateUser = mutation({
       externalId: args.externalId,
       name: args.name,
       email: args.email,
+      imageUrl: args.imageUrl,
       role: "pending",
     });
   },
@@ -44,5 +47,12 @@ export const updateUserRole = mutation({
   args: { userId: v.id("users"), role: v.union(v.literal("guest"), v.literal("owner"), v.literal("admin")) },
   handler: async (ctx, args) => {
     await ctx.db.patch(args.userId, { role: args.role });
+  },
+});
+
+export const getUserById = query({
+  args: { userId: v.id("users") },
+  handler: async (ctx, args) => {
+    return await ctx.db.get(args.userId);
   },
 });

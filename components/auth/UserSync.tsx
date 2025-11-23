@@ -15,6 +15,7 @@ export function UserSync() {
         externalId: user.id,
         name: user.fullName || user.firstName || "User",
         email: user.emailAddresses[0]?.emailAddress ?? "",
+        imageUrl: user.imageUrl,
       });
     }
   }, [user, updateUser]);
