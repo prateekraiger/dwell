@@ -29,7 +29,7 @@ async function getUser(ctx: any) {
     return defaultOwner;
   }
 
-  throw new ConvexError("Unauthorized");
+  throw new ConvexError("Please sign in to continue");
 }
 
 // GUEST: Query available rooms with optional filters
@@ -39,6 +39,7 @@ export const get = query({
     minPrice: v.optional(v.number()),
     maxPrice: v.optional(v.number()),
     minGuests: v.optional(v.number()),
+
   },
   handler: async (ctx, args) => {
     // Start with all rooms
@@ -88,8 +89,8 @@ export const getMyRooms = query({
   handler: async (ctx) => {
     const user = await getUser(ctx);
 
-    if (user.role !== "owner") {
-      throw new ConvexError("Only owners can view their rooms");
+    if (user.role !== "owner" && user.role !== "admin") {
+      throw new ConvexError("You need to be an owner to view your rooms. Please select the owner role from your profile");
     }
 
     return await ctx.db
@@ -113,8 +114,8 @@ export const create = mutation({
   handler: async (ctx, args) => {
     const user = await getUser(ctx);
 
-    if (user.role !== "owner") {
-      throw new ConvexError("Only owners can create rooms");
+    if (user.role !== "owner" && user.role !== "admin") {
+      throw new ConvexError("You need to be an owner to create rooms. Please select the owner role from your profile");
     }
 
     const roomId = await ctx.db.insert("rooms", {
@@ -143,8 +144,8 @@ export const update = mutation({
   handler: async (ctx, args) => {
     const user = await getUser(ctx);
 
-    if (user.role !== "owner") {
-      throw new ConvexError("Only owners can update rooms");
+    if (user.role !== "owner" && user.role !== "admin") {
+      throw new ConvexError("You need to be an owner to update rooms");
     }
 
     const room = await ctx.db.get(args.roomId);
@@ -152,8 +153,8 @@ export const update = mutation({
       throw new ConvexError("Room not found");
     }
 
-    if (room.ownerId !== user._id) {
-      throw new ConvexError("You can only update your own rooms");
+    if (room.ownerId !== user._id && user.role !== "admin") {
+      throw new ConvexError("You can only update rooms that you own");
     }
 
     const { roomId, ...updates } = args;
@@ -169,8 +170,8 @@ export const remove = mutation({
   handler: async (ctx, args) => {
     const user = await getUser(ctx);
 
-    if (user.role !== "owner") {
-      throw new ConvexError("Only owners can delete rooms");
+    if (user.role !== "owner" && user.role !== "admin") {
+      throw new ConvexError("You need to be an owner to delete rooms");
     }
 
     const room = await ctx.db.get(args.roomId);
@@ -178,8 +179,8 @@ export const remove = mutation({
       throw new ConvexError("Room not found");
     }
 
-    if (room.ownerId !== user._id) {
-      throw new ConvexError("You can only delete your own rooms");
+    if (room.ownerId !== user._id && user.role !== "admin") {
+      throw new ConvexError("You can only delete rooms that you own");
     }
 
     await ctx.db.delete(args.roomId);

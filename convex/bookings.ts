@@ -28,7 +28,7 @@ async function getUser(ctx: any) {
     return defaultUser;
   }
 
-  throw new ConvexError("Unauthorized");
+  throw new ConvexError("Please sign in to continue");
 }
 
 // GUEST: Get user's bookings
@@ -62,7 +62,7 @@ export const getBookingsForMyRooms = query({
     const user = await getUser(ctx);
 
     if (user.role !== "owner" && user.role !== "admin") {
-      throw new ConvexError("Only owners can view bookings for their rooms");
+      throw new ConvexError("You need to be an owner to view bookings for your rooms");
     }
 
     // Get all rooms owned by this user
@@ -126,6 +126,11 @@ export const create = mutation({
       throw new ConvexError("Room not found");
     }
 
+    // Validate dates
+    if (args.checkIn >= args.checkOut) {
+      throw new ConvexError("Check-out date must be after check-in date");
+    }
+
     // Check for overlapping bookings
     const existingBookings = await ctx.db
       .query("bookings")
@@ -142,7 +147,7 @@ export const create = mutation({
     });
 
     if (hasOverlap) {
-      throw new ConvexError("Room is already booked for these dates");
+      throw new ConvexError("This room is already booked for the selected dates. Please choose different dates");
     }
 
     const bookingId = await ctx.db.insert("bookings", {
@@ -175,8 +180,8 @@ export const cancel = mutation({
     const isGuest = booking.userId === user._id;
     const isOwner = room && room.ownerId === user._id;
 
-    if (!isGuest && !isOwner) {
-      throw new ConvexError("You can only cancel your own bookings or bookings for your rooms");
+    if (!isGuest && !isOwner && user.role !== "admin") {
+      throw new ConvexError("You can only cancel your own bookings or bookings for rooms that you own");
     }
 
     await ctx.db.patch(args.bookingId, {

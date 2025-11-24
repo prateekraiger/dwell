@@ -31,8 +31,10 @@ export function RoleCheck() {
 
       if (role === "guest") {
         router.push("/rooms");
-      } else {
+      } else if (role === "owner") {
         router.push("/dashboard");
+      } else {
+        router.push("/");
       }
     }
   };

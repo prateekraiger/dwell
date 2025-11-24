@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
 import {
   Dialog,
   DialogContent,
@@ -10,40 +11,58 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Plus, Trash2, XCircle } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { AVAILABLE_HIGHLIGHTS } from "@/lib/highlights";
-import { getFormattedErrorMessage } from "@/lib/error-utils";
 
-
-
-export function CreateRoomModal() {
-  const createRoom = useMutation(api.rooms.create);
-  const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState<{
+interface EditRoomModalProps {
+  room: {
+    _id: Id<"rooms">;
     title: string;
     location: string;
-    pricePerNight: string;
+    pricePerNight: number;
     description: string;
-    maxGuests: string;
     photos: string[];
+    maxGuests: number;
     highlights: string[];
-  }>({
-    title: "",
-    location: "",
-    pricePerNight: "",
-    description: "",
-    maxGuests: "",
-    photos: ["", ""], // Start with 2 empty slots
-    highlights: [],
+    isAvailable: boolean;
+  };
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}
+
+export function EditRoomModal({ room, open, onOpenChange }: EditRoomModalProps) {
+  const updateRoom = useMutation(api.rooms.update);
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    title: room.title,
+    location: room.location,
+    pricePerNight: room.pricePerNight.toString(),
+    description: room.description,
+    maxGuests: room.maxGuests.toString(),
+    photos: room.photos,
+    highlights: room.highlights,
+    isAvailable: room.isAvailable,
   });
+
+  // Update form data when room changes
+  useEffect(() => {
+    setFormData({
+      title: room.title,
+      location: room.location,
+      pricePerNight: room.pricePerNight.toString(),
+      description: room.description,
+      maxGuests: room.maxGuests.toString(),
+      photos: room.photos,
+      highlights: room.highlights,
+      isAvailable: room.isAvailable,
+    });
+  }, [room]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -108,7 +127,8 @@ export function CreateRoomModal() {
         return;
       }
 
-      await createRoom({
+      await updateRoom({
+        roomId: room._id,
         title: formData.title,
         location: formData.location,
         pricePerNight: Number(formData.pricePerNight),
@@ -116,38 +136,24 @@ export function CreateRoomModal() {
         maxGuests: Number(formData.maxGuests),
         photos: validPhotos,
         highlights: formData.highlights,
+        isAvailable: formData.isAvailable,
       });
 
-      setOpen(false);
-      setFormData({
-        title: "",
-        location: "",
-        pricePerNight: "",
-        description: "",
-        maxGuests: "",
-        photos: ["", ""],
-        highlights: [],
-      });
+      onOpenChange(false);
     } catch (error) {
-      console.error("Failed to create room:", error);
+      console.error("Failed to update room:", error);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Create Room
-        </Button>
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[525px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Create Room</DialogTitle>
+          <DialogTitle>Edit Room</DialogTitle>
           <DialogDescription>
-            Add a new room to your hotel listings. Click save when you're done.
+            Update your room details. Click save when you're done.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
@@ -289,6 +295,23 @@ export function CreateRoomModal() {
                 <p className="text-xs text-muted-foreground">
                   Minimum 2 photos required
                 </p>
+              </div>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="isAvailable" className="text-right">
+                Available
+              </Label>
+              <div className="col-span-3 flex items-center space-x-2">
+                <Checkbox
+                  id="isAvailable"
+                  checked={formData.isAvailable}
+                  onCheckedChange={(checked) =>
+                    setFormData((prev) => ({ ...prev, isAvailable: checked as boolean }))
+                  }
+                />
+                <Label htmlFor="isAvailable" className="text-sm font-normal cursor-pointer">
+                  Room is available for booking
+                </Label>
               </div>
             </div>
           </div>

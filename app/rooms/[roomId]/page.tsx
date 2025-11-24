@@ -25,6 +25,7 @@ import { getHighlightByKey } from "@/lib/highlights";
 import { format, differenceInDays, addDays } from "date-fns";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { getFormattedErrorMessage } from "@/lib/error-utils";
 
 export default function RoomDetailsPage() {
   const params = useParams();
@@ -104,7 +105,7 @@ export default function RoomDetailsPage() {
         router.push("/my-bookings");
       }, 2000);
     } catch (error) {
-      setBookingError(error instanceof Error ? error.message : "Failed to book room");
+      setBookingError(getFormattedErrorMessage(error));
     } finally {
       setIsBooking(false);
     }
