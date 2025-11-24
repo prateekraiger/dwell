@@ -17,11 +17,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Plus, Trash2, XCircle } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { AVAILABLE_HIGHLIGHTS } from "@/lib/highlights";
-import { getFormattedErrorMessage } from "@/lib/error-utils";
-
-
 
 export function CreateRoomModal() {
   const createRoom = useMutation(api.rooms.create);
@@ -46,7 +43,7 @@ export function CreateRoomModal() {
   });
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -227,17 +224,23 @@ export function CreateRoomModal() {
               />
             </div>
             <div className="grid grid-cols-4 items-start gap-4">
-              <Label className="text-right pt-2">
-                Highlights
-              </Label>
+              <Label className="text-right pt-2">Highlights</Label>
               <div className="col-span-3 grid grid-cols-2 gap-2">
                 {AVAILABLE_HIGHLIGHTS.map((highlight) => (
-                  <div key={highlight.key} className="flex items-center space-x-2">
+                  <div
+                    key={highlight.key}
+                    className="flex items-center space-x-2"
+                  >
                     <Checkbox
                       id={highlight.key}
                       checked={formData.highlights.includes(highlight.key)}
-                      onCheckedChange={() => handleHighlightToggle(highlight.key)}
-                      disabled={!formData.highlights.includes(highlight.key) && formData.highlights.length >= 3}
+                      onCheckedChange={() =>
+                        handleHighlightToggle(highlight.key)
+                      }
+                      disabled={
+                        !formData.highlights.includes(highlight.key) &&
+                        formData.highlights.length >= 3
+                      }
                     />
                     <Label
                       htmlFor={highlight.key}
@@ -253,9 +256,7 @@ export function CreateRoomModal() {
               </div>
             </div>
             <div className="grid grid-cols-4 items-start gap-4">
-              <Label className="text-right pt-2">
-                Photos
-              </Label>
+              <Label className="text-right pt-2">Photos</Label>
               <div className="col-span-3 space-y-2">
                 {formData.photos.map((photo, index) => (
                   <div key={index} className="flex gap-2">
