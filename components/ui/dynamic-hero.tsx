@@ -23,20 +23,7 @@ const PlayIcon = ({ className = "w-6 h-6" }) => (
     </svg>
 );
 
-const defaultNavItems = [
-    { id: 'home', label: 'Home', onClick: () => console.info('Default Home clicked') },
-    { id: 'about', label: 'About', href: '#about-section' },
-    { id: 'pricing', label: 'Pricing', onClick: () => console.info('Default Pricing clicked') },
-    { id: 'get-started-nav', label: 'Get Started', onClick: () => console.info('Default Nav Get Started clicked') },
-];
 
-type NavItem = {
-    id: string;
-    label: string;
-    href?: string;
-    target?: string;
-    onClick?: () => void;
-};
 
 
 const HeroSection = ({
@@ -46,7 +33,6 @@ const HeroSection = ({
     buttonLink,
     imageUrl,
     videoUrl,
-    navItems = defaultNavItems,
 }: {
     heading?: string;
     tagline?: string;
@@ -54,7 +40,6 @@ const HeroSection = ({
     buttonLink?: string;
     imageUrl?: string;
     videoUrl?: string;
-    navItems?: NavItem[];
 }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const targetRef = useRef<HTMLElement>(null);
