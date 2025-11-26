@@ -52,6 +52,7 @@ export default function RoomDetailsPage() {
   const existingBookings = useQuery(api.bookings.getBookingsByRoom, { roomId });
 
   const createCheckoutSession = useAction(api.payments.createCheckoutSession);
+  const createBooking = useMutation(api.bookings.create);
 
   if (room === undefined || owner === undefined) {
     return (
@@ -88,7 +89,7 @@ export default function RoomDetailsPage() {
   const serviceFee = Math.round(totalPrice * 0.12); // 12% service fee
   const grandTotal = totalPrice + serviceFee;
 
-  const createBooking = useMutation(api.bookings.create);
+
 
   const handleBookRoom = async () => {
     if (!checkIn || !checkOut) return;
