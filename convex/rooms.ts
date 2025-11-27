@@ -6,30 +6,20 @@ import { ConvexError } from "convex/values";
 async function getUser(ctx: any) {
   const identity = await ctx.auth.getUserIdentity();
 
-  if (identity) {
-    const user = await ctx.db
-      .query("users")
-      .withIndex("byExternalId", (q: any) => q.eq("externalId", identity.subject))
-      .unique();
-
-    if (!user) {
-      throw new ConvexError("User not found");
-    }
-    return user;
+  if (!identity) {
+    throw new ConvexError("Please sign in to continue");
   }
 
-  // Fallback: Try to find a default owner if no auth (FOR DEV ONLY)
-  const defaultOwner = await ctx.db
+  const user = await ctx.db
     .query("users")
-    .filter((q: any) => q.eq(q.field("role"), "owner"))
-    .first();
+    .withIndex("byExternalId", (q: any) => q.eq("externalId", identity.subject))
+    .unique();
 
-  if (defaultOwner) {
-    console.log("Using default owner for unauthenticated request:", defaultOwner.name);
-    return defaultOwner;
+  if (!user) {
+    throw new ConvexError("User not found. Please complete your profile.");
   }
 
-  throw new ConvexError("Please sign in to continue");
+  return user;
 }
 
 // GUEST: Query available rooms with optional filters
@@ -39,7 +29,6 @@ export const get = query({
     minPrice: v.optional(v.number()),
     maxPrice: v.optional(v.number()),
     minGuests: v.optional(v.number()),
-
   },
   handler: async (ctx, args) => {
     // Start with all rooms
@@ -90,7 +79,9 @@ export const getMyRooms = query({
     const user = await getUser(ctx);
 
     if (user.role !== "owner" && user.role !== "admin") {
-      throw new ConvexError("You need to be an owner to view your rooms. Please select the owner role from your profile");
+      throw new ConvexError(
+        "You need to be an owner to view your rooms. Please select the owner role from your profile"
+      );
     }
 
     return await ctx.db
@@ -115,7 +106,9 @@ export const create = mutation({
     const user = await getUser(ctx);
 
     if (user.role !== "owner" && user.role !== "admin") {
-      throw new ConvexError("You need to be an owner to create rooms. Please select the owner role from your profile");
+      throw new ConvexError(
+        "You need to be an owner to create rooms. Please select the owner role from your profile"
+      );
     }
 
     const roomId = await ctx.db.insert("rooms", {
