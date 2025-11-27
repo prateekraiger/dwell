@@ -20,8 +20,6 @@ export const createCheckoutSession = action({
       throw new Error("HOST_URL environment variable is not set in Convex.");
     }
 
-    console.log("Using HOST_URL:", domain);
-
     // Fetch booking details
     const booking = await ctx.runQuery(api.bookings.getBookingById, {
       bookingId: args.bookingId,
