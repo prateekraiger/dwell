@@ -15,7 +15,7 @@ export const createCheckoutSession = action({
       apiVersion: "2024-11-20.acacia" as any, // Cast to any to avoid version mismatch errors if types are outdated
     });
 
-    const domain = process.env.NEXT_PUBLIC_HOST_URL || "http://localhost:3000";
+    const domain = process.env.NEXT_PUBLIC_HOST_URL;
 
     // Fetch booking details
     const booking = await ctx.runQuery(api.bookings.getBookingById, {
