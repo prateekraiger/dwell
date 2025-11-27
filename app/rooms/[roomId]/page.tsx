@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useAction } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
@@ -26,12 +26,21 @@ import { format, differenceInDays, addDays } from "date-fns";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { getFormattedErrorMessage } from "@/lib/error-utils";
+import { useUser } from "@clerk/nextjs";
 
 export default function RoomDetailsPage() {
   const params = useParams();
   const router = useRouter();
+  const { user, isLoaded } = useUser();
   const roomId = params.roomId as Id<"rooms">;
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  // Redirect to sign-in if not authenticated
+  useEffect(() => {
+    if (isLoaded && !user) {
+      router.push("/sign-in");
+    }
+  }, [isLoaded, user, router]);
 
   // Booking state
   const [checkInDate, setCheckInDate] = useState<string>("");
@@ -53,6 +62,20 @@ export default function RoomDetailsPage() {
 
   const createCheckoutSession = useAction(api.payments.createCheckoutSession);
   const createBooking = useMutation(api.bookings.create);
+
+  // Show loading state while checking authentication
+  if (!isLoaded || !user) {
+    return (
+      <div className="container mx-auto py-20 px-4">
+        <div className="flex items-center justify-center min-h-[calc(100vh-8rem)]">
+          <div className="text-center space-y-4">
+            <div className="h-8 w-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
+            <p className="text-muted-foreground">Checking authentication...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (room === undefined || owner === undefined) {
     return (
@@ -77,19 +100,20 @@ export default function RoomDetailsPage() {
 
   const prevImage = () => {
     if (room.photos && hasMultipleImages) {
-      setCurrentImageIndex((prev) => (prev - 1 + room.photos.length) % room.photos.length);
+      setCurrentImageIndex(
+        (prev) => (prev - 1 + room.photos.length) % room.photos.length
+      );
     }
   };
 
   // Calculate booking details
   const checkIn = checkInDate ? new Date(checkInDate) : undefined;
   const checkOut = checkOutDate ? new Date(checkOutDate) : undefined;
-  const numberOfNights = checkIn && checkOut ? differenceInDays(checkOut, checkIn) : 0;
+  const numberOfNights =
+    checkIn && checkOut ? differenceInDays(checkOut, checkIn) : 0;
   const totalPrice = numberOfNights * room.pricePerNight;
   const serviceFee = Math.round(totalPrice * 0.12); // 12% service fee
   const grandTotal = totalPrice + serviceFee;
-
-
 
   const handleBookRoom = async () => {
     if (!checkIn || !checkOut) return;
@@ -187,7 +211,9 @@ export default function RoomDetailsPage() {
           {/* Description */}
           <div className="space-y-4">
             <h2 className="text-2xl font-bold">About this place</h2>
-            <p className="text-muted-foreground leading-relaxed">{room.description}</p>
+            <p className="text-muted-foreground leading-relaxed">
+              {room.description}
+            </p>
           </div>
 
           {/* Amenities */}
@@ -200,7 +226,10 @@ export default function RoomDetailsPage() {
                   if (!highlight) return null;
                   const Icon = highlight.icon;
                   return (
-                    <div key={i} className="flex items-center gap-3 p-4 rounded-lg border bg-card">
+                    <div
+                      key={i}
+                      className="flex items-center gap-3 p-4 rounded-lg border bg-card"
+                    >
                       <Icon className="h-6 w-6 text-primary shrink-0" />
                       <span className="font-medium">{highlight.label}</span>
                     </div>
@@ -256,11 +285,15 @@ export default function RoomDetailsPage() {
         <div className="lg:col-span-2 space-y-6">
           {/* Owner Info */}
           <div className="rounded-xl border bg-card p-6 space-y-4 sticky top-6">
-            <h3 className="font-semibold text-lg">Hosted by {owner?.name || "Unknown"}</h3>
+            <h3 className="font-semibold text-lg">
+              Hosted by {owner?.name || "Unknown"}
+            </h3>
             <div className="flex items-center gap-4">
               <Avatar className="h-16 w-16">
                 <AvatarImage src={owner?.imageUrl} alt={owner?.name} />
-                <AvatarFallback className="text-lg">{owner?.name?.charAt(0) || "?"}</AvatarFallback>
+                <AvatarFallback className="text-lg">
+                  {owner?.name?.charAt(0) || "?"}
+                </AvatarFallback>
               </Avatar>
               <div className="text-sm text-muted-foreground">
                 <p>{owner?.email}</p>
@@ -305,7 +338,9 @@ export default function RoomDetailsPage() {
                 <Input
                   id="check-out"
                   type="date"
-                  min={checkInDate || format(addDays(new Date(), 1), "yyyy-MM-dd")}
+                  min={
+                    checkInDate || format(addDays(new Date(), 1), "yyyy-MM-dd")
+                  }
                   value={checkOutDate}
                   onChange={(e) => setCheckOutDate(e.target.value)}
                   className="w-full"
@@ -343,14 +378,18 @@ export default function RoomDetailsPage() {
             {isSuccess ? (
               <div className="rounded-lg bg-green-500/15 p-4 flex items-center gap-3 text-green-600">
                 <CheckCircle2 className="h-5 w-5" />
-                <div className="text-sm font-medium">Booking confirmed! Redirecting...</div>
+                <div className="text-sm font-medium">
+                  Booking confirmed! Redirecting...
+                </div>
               </div>
             ) : (
               <Button
                 size="lg"
                 className="w-full text-base"
                 onClick={handleBookRoom}
-                disabled={!checkIn || !checkOut || isBooking || numberOfNights <= 0}
+                disabled={
+                  !checkIn || !checkOut || isBooking || numberOfNights <= 0
+                }
               >
                 {isBooking ? "Redirecting to Payment..." : "Book This Room"}
               </Button>

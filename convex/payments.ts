@@ -15,7 +15,14 @@ export const createCheckoutSession = action({
       apiVersion: "2024-11-20.acacia" as any, // Cast to any to avoid version mismatch errors if types are outdated
     });
 
-    const domain = process.env.NEXT_PUBLIC_HOST_URL;
+    // Get domain and ensure it has proper scheme and no trailing slash
+    let domain = process.env.NEXT_PUBLIC_HOST_URL || "http://localhost:3000";
+    domain = domain.replace(/\/$/, ""); // Remove trailing slash
+
+    // Ensure domain has a scheme
+    if (!domain.startsWith("http://") && !domain.startsWith("https://")) {
+      domain = `https://${domain}`;
+    }
 
     // Fetch booking details
     const booking = await ctx.runQuery(api.bookings.getBookingById, {
@@ -32,7 +39,7 @@ export const createCheckoutSession = action({
 
     // Calculate total amount
     const numberOfNights = Math.ceil(
-      (booking.checkOut - booking.checkIn) / (1000 * 60 * 60 * 24),
+      (booking.checkOut - booking.checkIn) / (1000 * 60 * 60 * 24)
     );
     const totalPrice = numberOfNights * room.pricePerNight;
     const serviceFee = Math.round(totalPrice * 0.12);
