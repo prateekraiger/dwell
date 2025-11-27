@@ -17,10 +17,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
+
 export function BookingsCard() {
   const [filterStatus, setFilterStatus] = useState<"all" | "confirmed" | "cancelled" | "pending">("all");
 
-  // Fetch bookings from Convex
+
   const bookings = useQuery(api.bookings.getBookingsForMyRooms);
 
   if (bookings === undefined) {
