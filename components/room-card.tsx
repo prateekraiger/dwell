@@ -2,16 +2,16 @@
 
 import { useState } from "react";
 import {
-  Card,
   CardContent,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { MotionCard } from "@/components/ui/motion-card";
 import { MapPin, IndianRupee, Pencil, Trash2, CheckCircle2 } from "lucide-react";
 import { Id } from "@/convex/_generated/dataModel";
 import Link from "next/link";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { getHighlightByKey } from "@/lib/highlights";
 import { EditRoomModal } from "@/components/edit-room-modal";
 import { useMutation } from "convex/react";
@@ -62,13 +62,17 @@ export function RoomCard({ room, showBookingAction = false, showOwnerActions = f
   };
 
   const cardContent = (
-    <Card className="overflow-hidden group hover:shadow-lg transition-all duration-300 flex flex-col h-full">
+    <MotionCard
+      className="overflow-hidden group h-full flex flex-col"
+      hoverLift={-5}
+      hoverScale={1.02}
+    >
       <div className="aspect-video w-full overflow-hidden bg-muted relative">
         {room.photos && room.photos.length > 0 ? (
           <img
             src={room.photos[0]}
             alt={room.title}
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center bg-muted text-muted-foreground">
@@ -152,7 +156,7 @@ export function RoomCard({ room, showBookingAction = false, showOwnerActions = f
           </div>
         )}
       </CardFooter>
-    </Card>
+    </MotionCard>
   );
 
   return (

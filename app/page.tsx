@@ -1,8 +1,10 @@
 import { HeroSection } from "@/components/ui/dynamic-hero";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import { NewsletterForm } from "@/components/newsletter-form";
+import { MotionWrapper } from "@/components/ui/motion-wrapper";
+import { MotionButton } from "@/components/ui/motion-button";
+import { MotionCard } from "@/components/ui/motion-card";
+import { CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function Home() {
   return (
@@ -19,9 +21,11 @@ export default function Home() {
       {/* Featured Section */}
       <section className="py-20 px-4 md:px-8 bg-background">
         <div className="container mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12">
-            Why Choose Dwell?
-          </h2>
+          <MotionWrapper animation="fade-in-up">
+            <h2 className="text-3xl font-bold text-center mb-12">
+              Why Choose Dwell?
+            </h2>
+          </MotionWrapper>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
@@ -40,13 +44,17 @@ export default function Home() {
                   "Located in the center of it all, yet a world away from the noise.",
               },
             ].map((feature, index) => (
-              <div
+              <MotionWrapper
                 key={index}
-                className="p-6 rounded-lg border bg-card text-card-foreground shadow-sm"
+                animation="fade-in-up"
+                delay={index * 0.1}
+                className="h-full"
               >
-                <h3 className="text-xl font-semibold mb-3">{feature.title}</h3>
-                <p className="text-muted-foreground">{feature.description}</p>
-              </div>
+                <MotionCard className="h-full p-6" hoverLift={-5} hoverScale={1.03}>
+                  <h3 className="text-xl font-semibold mb-3">{feature.title}</h3>
+                  <p className="text-muted-foreground">{feature.description}</p>
+                </MotionCard>
+              </MotionWrapper>
             ))}
           </div>
         </div>
@@ -55,12 +63,12 @@ export default function Home() {
       {/* Featured Rooms Section */}
       <section className="py-20 px-4 md:px-8 bg-muted/50">
         <div className="container mx-auto">
-          <div className="text-center mb-12">
+          <MotionWrapper animation="fade-in-up" className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4">Our Featured Rooms</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
               Choose from our selection of elegantly designed rooms, each offering a unique blend of comfort and style.
             </p>
-          </div>
+          </MotionWrapper>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
@@ -82,43 +90,51 @@ export default function Home() {
                 description: "Large suite with multiple beds and a living area for the whole family.",
               },
             ].map((room, index) => (
-              <Card key={index} className="overflow-hidden">
-                <div className="aspect-video w-full relative">
-                  <img
-                    src={room.image}
-                    alt={room.title}
-                    className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
-                  />
-                </div>
-                <CardHeader>
-                  <div className="flex justify-between items-center">
-                    <CardTitle>{room.title}</CardTitle>
-                    <span className="text-primary font-bold">{room.price}</span>
+              <MotionWrapper
+                key={index}
+                animation="fade-in-up"
+                delay={index * 0.1}
+              >
+                <MotionCard className="overflow-hidden h-full flex flex-col" hoverLift={-8} hoverScale={1.02}>
+                  <div className="aspect-video w-full relative overflow-hidden">
+                    <img
+                      src={room.image}
+                      alt={room.title}
+                      className="w-full h-full object-cover transition-transform hover:scale-110 duration-700"
+                    />
                   </div>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription>{room.description}</CardDescription>
-                </CardContent>
-                <CardFooter>
-                  <Button asChild className="w-full">
-                    <Link href="/rooms">Book Now</Link>
-                  </Button>
-                </CardFooter>
-              </Card>
+                  <CardHeader>
+                    <div className="flex justify-between items-center">
+                      <CardTitle>{room.title}</CardTitle>
+                      <span className="text-primary font-bold">{room.price}</span>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="flex-grow">
+                    <CardDescription>{room.description}</CardDescription>
+                  </CardContent>
+                  <CardFooter>
+                    <MotionButton asChild className="w-full">
+                      <Link href="/rooms">Book Now</Link>
+                    </MotionButton>
+                  </CardFooter>
+                </MotionCard>
+              </MotionWrapper>
             ))}
           </div>
-          <div className="text-center mt-12">
-            <Button asChild variant="outline" size="lg">
+          <MotionWrapper animation="fade-in-up" delay={0.3} className="text-center mt-12">
+            <MotionButton asChild variant="outline" size="lg">
               <Link href="/rooms">View All Rooms</Link>
-            </Button>
-          </div>
+            </MotionButton>
+          </MotionWrapper>
         </div>
       </section>
 
       {/* Testimonials Section */}
       <section className="py-20 px-4 md:px-8 bg-background">
         <div className="container mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12">What Our Guests Say</h2>
+          <MotionWrapper animation="fade-in-up">
+            <h2 className="text-3xl font-bold text-center mb-12">What Our Guests Say</h2>
+          </MotionWrapper>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
@@ -137,30 +153,37 @@ export default function Home() {
                 quote: "Our kids loved the family suite! Spacious, clean, and very accommodating staff.",
               },
             ].map((testimonial, index) => (
-              <Card key={index} className="bg-muted/30 border-none">
-                <CardContent className="pt-6">
-                  <div className="flex flex-col gap-4">
-                    <div className="text-primary">
-                      {/* Simple quote icon */}
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="40"
-                        height="40"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                        className="opacity-50"
-                      >
-                        <path d="M14.017 21L14.017 18C14.017 16.0547 15.372 15.1181 16.8145 14C16.5557 14 16.2731 14.0156 15.9757 14.0156C13.5284 14.0156 11.5367 11.979 11.5367 9.46875C11.5367 7.09885 13.5623 5 15.9757 5C18.423 5 20.4485 7.08643 20.4485 9.46875C20.4485 14.0586 17.6534 18.2734 14.017 21ZM5 21L5 18C5 16.0547 6.35496 15.1181 7.79749 14C7.5387 14 7.25615 14.0156 6.95874 14.0156C4.51137 14.0156 2.51969 11.979 2.51969 9.46875C2.51969 7.09885 4.54528 5 6.95874 5C9.40604 5 11.4315 7.08643 11.4315 9.46875C11.4315 14.0586 8.63644 18.2734 5 21Z" />
-                      </svg>
+              <MotionWrapper
+                key={index}
+                animation="zoom-in"
+                delay={index * 0.1}
+                className="h-full"
+              >
+                <MotionCard className="bg-muted/30 border-none h-full" hoverLift={-2} hoverScale={1.01}>
+                  <CardContent className="pt-6">
+                    <div className="flex flex-col gap-4">
+                      <div className="text-primary">
+                        {/* Simple quote icon */}
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="40"
+                          height="40"
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                          className="opacity-50"
+                        >
+                          <path d="M14.017 21L14.017 18C14.017 16.0547 15.372 15.1181 16.8145 14C16.5557 14 16.2731 14.0156 15.9757 14.0156C13.5284 14.0156 11.5367 11.979 11.5367 9.46875C11.5367 7.09885 13.5623 5 15.9757 5C18.423 5 20.4485 7.08643 20.4485 9.46875C20.4485 14.0586 17.6534 18.2734 14.017 21ZM5 21L5 18C5 16.0547 6.35496 15.1181 7.79749 14C7.5387 14 7.25615 14.0156 6.95874 14.0156C4.51137 14.0156 2.51969 11.979 2.51969 9.46875C2.51969 7.09885 4.54528 5 6.95874 5C9.40604 5 11.4315 7.08643 11.4315 9.46875C11.4315 14.0586 8.63644 18.2734 5 21Z" />
+                        </svg>
+                      </div>
+                      <p className="italic text-muted-foreground">{testimonial.quote}</p>
+                      <div>
+                        <h4 className="font-semibold">{testimonial.name}</h4>
+                        <span className="text-sm text-muted-foreground">{testimonial.role}</span>
+                      </div>
                     </div>
-                    <p className="italic text-muted-foreground">{testimonial.quote}</p>
-                    <div>
-                      <h4 className="font-semibold">{testimonial.name}</h4>
-                      <span className="text-sm text-muted-foreground">{testimonial.role}</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </MotionCard>
+              </MotionWrapper>
             ))}
           </div>
         </div>
@@ -168,13 +191,13 @@ export default function Home() {
 
       {/* Newsletter Section */}
       <section className="py-20 px-4 md:px-8 bg-primary text-primary-foreground">
-        <div className="container mx-auto text-center max-w-2xl">
+        <MotionWrapper animation="fade-in-up" className="container mx-auto text-center max-w-2xl">
           <h2 className="text-3xl font-bold mb-4">Stay in the Loop</h2>
           <p className="mb-8 opacity-90">
             Subscribe to our newsletter for exclusive offers, travel tips, and upcoming events at Dwell.
           </p>
           <NewsletterForm />
-        </div>
+        </MotionWrapper>
       </section>
     </div>
   );
