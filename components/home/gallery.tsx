@@ -18,20 +18,32 @@ export function Gallery() {
                 </div>
             </div>
 
-            {/* Minimal Masonry-ish Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 h-96 md:h-[500px]">
-                <div className="col-span-2 row-span-2 relative overflow-hidden group">
-                    <img src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/5bab247f-35d9-400d-a82b-fd87cfe913d2_1600w.webp" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Pool" />
+            {/* 5-Image Bento Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-4 grid-rows-2 gap-4 h-[600px]">
+                {/* Image 1: Large Main Image (Left Half) */}
+                <div className="col-span-2 row-span-2 relative overflow-hidden group rounded-2xl">
+                    <img src="https://plus.unsplash.com/premium_photo-1661964402307-02267d1423f5?q=80&w=1073&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Visual Journey 1" />
                     <div className="absolute inset-0 bg-stone-900/0 group-hover:bg-stone-900/10 transition-colors"></div>
                 </div>
-                <div className="col-span-1 row-span-1 relative overflow-hidden group">
-                    <img src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/30104e3c-5eea-4b93-93e9-5313698a7156_1600w.webp" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Detail" />
+
+                {/* Image 2: Top Right 1 */}
+                <div className="col-span-1 row-span-1 relative overflow-hidden group rounded-2xl">
+                    <img src="https://images.unsplash.com/photo-1568495248636-6432b97bd949?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Visual Journey 2" />
                 </div>
-                <div className="col-span-1 row-span-2 relative overflow-hidden group">
-                    <img src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/30104e3c-5eea-4b93-93e9-5313698a7156_1600w.webp" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Hallway" />
+
+                {/* Image 3: Top Right 2 */}
+                <div className="col-span-1 row-span-1 relative overflow-hidden group rounded-2xl">
+                    <img src="https://images.unsplash.com/photo-1590490360182-c33d57733427?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Visual Journey 3" />
                 </div>
-                <div className="col-span-1 row-span-1 relative overflow-hidden group">
-                    <img src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/917d6f93-fb36-439a-8c48-884b67b35381_1600w.jpg" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Champagne" />
+
+                {/* Image 4: Bottom Right 1 */}
+                <div className="col-span-1 row-span-1 relative overflow-hidden group rounded-2xl">
+                    <img src="https://plus.unsplash.com/premium_photo-1678297270385-ad5067126607?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Visual Journey 4" />
+                </div>
+
+                {/* Image 5: Bottom Right 2 */}
+                <div className="col-span-1 row-span-1 relative overflow-hidden group rounded-2xl">
+                    <img src="https://images.unsplash.com/photo-1667054430237-2a2afe4cb863?q=80&w=735&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Visual Journey 5" />
                 </div>
             </div>
         </div>
